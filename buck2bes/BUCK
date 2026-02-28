@@ -1,15 +1,18 @@
-load("//:proto_defs.bzl", "rust_protobuf_library")
-
-rust_protobuf_library(
+rust_library(
     name = "buck2bes",
     srcs = glob(["src/**/*.rs"]),
-    build_script = "build.rs",
-    proto_srcs = "//proto:all",
-    build_script_deps = [
-        "//third-party:prost-build",
-    ],
     deps = [
+        "//buck2bes_proto:buck2bes_proto",
+        # "//third-party:zstd",
+    ],
+)
+
+rust_test(
+    name = "buck2bes_test",
+    srcs = glob(["src/**/*.rs"]) + ["src/testlog.pb.zst"],
+    deps = [
+        "//buck2bes_proto:buck2bes_proto",
         "//third-party:prost",
-        "//third-party:serde",
+        "//third-party:zstd",
     ],
 )

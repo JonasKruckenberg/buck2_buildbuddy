@@ -1,0 +1,16 @@
+load("//:proto_defs.bzl", "rust_protobuf_library")
+
+rust_protobuf_library(
+    name = "buck2bes_proto",
+    srcs = glob(["src/**/*.rs"]),
+    build_script = "build.rs",
+    proto_srcs = "//proto:all",
+    build_script_deps = [
+        "//third-party:prost-build",
+    ],
+    deps = [
+        "//third-party:prost",
+        "//third-party:serde",
+    ],
+    visibility = ["PUBLIC"]
+)

@@ -7,6 +7,14 @@ pub mod buck {
         }
     }
 
+    pub mod daemon {
+        include!(concat!(env!("OUT_DIR"), "/buck.daemon.rs"));
+    }
+
+    pub mod subscription {
+        include!(concat!(env!("OUT_DIR"), "/buck.subscription.rs"));
+    }
+
     pub mod host_sharing {
         include!(concat!(env!("OUT_DIR"), "/buck.host_sharing.rs"));
     }

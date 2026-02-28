@@ -1,12 +1,12 @@
-use crate::proto::buck::data::{
+use buck2bes_proto::buck::data::{
     self, buck_event, command_start, instant_event, span_end_event, span_start_event, BuckEvent,
     ConsoleMessage, ConsoleWarning,
 };
-use crate::proto::build_event_stream::{
+use buck2bes_proto::build_event_stream::{
     self, build_event, build_event_id, BuildEvent, BuildEventId, BuildFinished, BuildStarted,
     Progress,
 };
-use crate::proto::google::protobuf as buck_pb;
+use buck2bes_proto::google::protobuf as buck_pb;
 
 /// Translates a stream of Buck2 `BuckEvent`s into Bazel Build Event Stream `BuildEvent`s.
 ///
@@ -259,7 +259,7 @@ fn add_duration(ts: &buck_pb::Timestamp, dur: &buck_pb::Duration) -> buck_pb::Ti
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::proto::buck::data::*;
+    use buck2bes_proto::buck::data::*;
 
     fn make_timestamp(seconds: i64) -> buck_pb::Timestamp {
         buck_pb::Timestamp { seconds, nanos: 0 }

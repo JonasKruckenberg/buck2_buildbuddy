@@ -60,6 +60,43 @@ cargo.rust_library(
 )
 
 http_archive(
+    name = "cc-1.2.56.crate",
+    sha256 = "aebf35691d1bfb0ac386a69bac2fde4dd276fb618cf8bf4f5318fe285e821bb2",
+    strip_prefix = "cc-1.2.56",
+    urls = ["https://static.crates.io/crates/cc/1.2.56/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "cc-1.2.56",
+    srcs = [":cc-1.2.56.crate"],
+    crate = "cc",
+    crate_root = "cc-1.2.56.crate/src/lib.rs",
+    edition = "2018",
+    features = ["parallel"],
+    platform = {
+        "linux-arm64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+        "linux-x86_64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+        "macos-arm64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+        "macos-x86_64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+    },
+    visibility = [],
+    deps = [
+        ":find-msvc-tools-0.1.9",
+        ":jobserver-0.1.34",
+        ":shlex-1.3.0",
+    ],
+)
+
+http_archive(
     name = "cfg-if-1.0.4.crate",
     sha256 = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801",
     strip_prefix = "cfg-if-1.0.4",
@@ -163,6 +200,23 @@ cargo.rust_library(
 )
 
 http_archive(
+    name = "find-msvc-tools-0.1.9.crate",
+    sha256 = "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582",
+    strip_prefix = "find-msvc-tools-0.1.9",
+    urls = ["https://static.crates.io/crates/find-msvc-tools/0.1.9/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "find-msvc-tools-0.1.9",
+    srcs = [":find-msvc-tools-0.1.9.crate"],
+    crate = "find_msvc_tools",
+    crate_root = "find-msvc-tools-0.1.9.crate/src/lib.rs",
+    edition = "2018",
+    visibility = [],
+)
+
+http_archive(
     name = "fixedbitset-0.5.7.crate",
     sha256 = "1d674e81391d1e1ab681a28d99df07927c6d4aa5b027d7da16ba32d1d21ecd99",
     strip_prefix = "fixedbitset-0.5.7",
@@ -194,6 +248,25 @@ cargo.rust_library(
     crate_root = "foldhash-0.1.5.crate/src/lib.rs",
     edition = "2021",
     visibility = [],
+)
+
+http_archive(
+    name = "getrandom-0.3.4.crate",
+    sha256 = "899def5c37c4fd7b2664648c28120ecec138e4d395b459e5ca34f9cce2dd77fd",
+    strip_prefix = "getrandom-0.3.4",
+    urls = ["https://static.crates.io/crates/getrandom/0.3.4/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "getrandom-0.3.4",
+    srcs = [":getrandom-0.3.4.crate"],
+    crate = "getrandom",
+    crate_root = "getrandom-0.3.4.crate/src/lib.rs",
+    edition = "2021",
+    features = ["std"],
+    visibility = [],
+    deps = [":cfg-if-1.0.4"],
 )
 
 http_archive(
@@ -347,6 +420,43 @@ cargo.rust_library(
 )
 
 http_archive(
+    name = "jobserver-0.1.34.crate",
+    sha256 = "9afb3de4395d6b3e67a780b6de64b51c978ecf11cb9a462c66be7d4ca9039d33",
+    strip_prefix = "jobserver-0.1.34",
+    urls = ["https://static.crates.io/crates/jobserver/0.1.34/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "jobserver-0.1.34",
+    srcs = [":jobserver-0.1.34.crate"],
+    crate = "jobserver",
+    crate_root = "jobserver-0.1.34.crate/src/lib.rs",
+    edition = "2021",
+    platform = {
+        "linux-arm64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+        "linux-x86_64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+        "macos-arm64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+        "macos-x86_64": dict(
+            deps = [":libc-0.2.182"],
+        ),
+        "windows-gnu": dict(
+            deps = [":getrandom-0.3.4"],
+        ),
+        "windows-msvc": dict(
+            deps = [":getrandom-0.3.4"],
+        ),
+    },
+    visibility = [],
+)
+
+http_archive(
     name = "libc-0.2.182.crate",
     sha256 = "6800badb6cb2082ffd7b6a67e6125bb39f18782f793520caee8cb8846be06112",
     strip_prefix = "libc-0.2.182",
@@ -360,7 +470,10 @@ cargo.rust_library(
     crate = "libc",
     crate_root = "libc-0.2.182.crate/src/lib.rs",
     edition = "2021",
-    features = ["std"],
+    features = [
+        "default",
+        "std",
+    ],
     visibility = [],
 )
 
@@ -487,6 +600,23 @@ cargo.rust_library(
         ":hashbrown-0.15.5",
         ":indexmap-2.13.0",
     ],
+)
+
+http_archive(
+    name = "pkg-config-0.3.32.crate",
+    sha256 = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c",
+    strip_prefix = "pkg-config-0.3.32",
+    urls = ["https://static.crates.io/crates/pkg-config/0.3.32/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "pkg-config-0.3.32",
+    srcs = [":pkg-config-0.3.32.crate"],
+    crate = "pkg_config",
+    crate_root = "pkg-config-0.3.32.crate/src/lib.rs",
+    edition = "2018",
+    visibility = [],
 )
 
 http_archive(
@@ -1107,6 +1237,27 @@ buildscript_run(
 )
 
 http_archive(
+    name = "shlex-1.3.0.crate",
+    sha256 = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64",
+    strip_prefix = "shlex-1.3.0",
+    urls = ["https://static.crates.io/crates/shlex/1.3.0/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "shlex-1.3.0",
+    srcs = [":shlex-1.3.0.crate"],
+    crate = "shlex",
+    crate_root = "shlex-1.3.0.crate/src/lib.rs",
+    edition = "2015",
+    features = [
+        "default",
+        "std",
+    ],
+    visibility = [],
+)
+
+http_archive(
     name = "syn-2.0.117.crate",
     sha256 = "e665b8803e7b1d2a727f4023456bbbbe74da67099c585258af0ad9c5013b9b99",
     strip_prefix = "syn-2.0.117",
@@ -1257,5 +1408,403 @@ cargo.rust_library(
     crate = "zmij",
     crate_root = "zmij-1.0.21.crate/src/lib.rs",
     edition = "2021",
+    visibility = [],
+)
+
+alias(
+    name = "zstd",
+    actual = ":zstd-0.13.3",
+    visibility = ["PUBLIC"],
+)
+
+http_archive(
+    name = "zstd-0.13.3.crate",
+    sha256 = "e91ee311a569c327171651566e07972200e76fcfe2242a4fa446149a3881c08a",
+    strip_prefix = "zstd-0.13.3",
+    urls = ["https://static.crates.io/crates/zstd/0.13.3/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "zstd-0.13.3",
+    srcs = [":zstd-0.13.3.crate"],
+    crate = "zstd",
+    crate_root = "zstd-0.13.3.crate/src/lib.rs",
+    edition = "2018",
+    features = [
+        "arrays",
+        "default",
+        "legacy",
+        "zdict_builder",
+    ],
+    visibility = [],
+    deps = [":zstd-safe-7.2.4"],
+)
+
+http_archive(
+    name = "zstd-safe-7.2.4.crate",
+    sha256 = "8f49c4d5f0abb602a93fb8736af2a4f4dd9512e36f7f570d66e65ff867ed3b9d",
+    strip_prefix = "zstd-safe-7.2.4",
+    urls = ["https://static.crates.io/crates/zstd-safe/7.2.4/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "zstd-safe-7.2.4",
+    srcs = [":zstd-safe-7.2.4.crate"],
+    crate = "zstd_safe",
+    crate_root = "zstd-safe-7.2.4.crate/src/lib.rs",
+    edition = "2018",
+    features = [
+        "arrays",
+        "legacy",
+        "std",
+        "zdict_builder",
+    ],
+    visibility = [],
+    deps = [":zstd-sys-2.0.16+zstd.1.5.7"],
+)
+
+http_archive(
+    name = "zstd-sys-2.0.16+zstd.1.5.7.crate",
+    sha256 = "91e19ebc2adc8f83e43039e79776e3fda8ca919132d68a1fed6a5faca2683748",
+    strip_prefix = "zstd-sys-2.0.16+zstd.1.5.7",
+    sub_targets = [
+        "zdict.h",
+        "zstd.h",
+        "zstd/lib/common/allocations.h",
+        "zstd/lib/common/bits.h",
+        "zstd/lib/common/bitstream.h",
+        "zstd/lib/common/compiler.h",
+        "zstd/lib/common/cpu.h",
+        "zstd/lib/common/debug.c",
+        "zstd/lib/common/debug.h",
+        "zstd/lib/common/entropy_common.c",
+        "zstd/lib/common/error_private.c",
+        "zstd/lib/common/error_private.h",
+        "zstd/lib/common/fse.h",
+        "zstd/lib/common/fse_decompress.c",
+        "zstd/lib/common/huf.h",
+        "zstd/lib/common/mem.h",
+        "zstd/lib/common/pool.c",
+        "zstd/lib/common/pool.h",
+        "zstd/lib/common/portability_macros.h",
+        "zstd/lib/common/threading.c",
+        "zstd/lib/common/threading.h",
+        "zstd/lib/common/xxhash.h",
+        "zstd/lib/common/zstd_common.c",
+        "zstd/lib/common/zstd_deps.h",
+        "zstd/lib/common/zstd_internal.h",
+        "zstd/lib/common/zstd_trace.h",
+        "zstd/lib/compress/clevels.h",
+        "zstd/lib/compress/fse_compress.c",
+        "zstd/lib/compress/hist.c",
+        "zstd/lib/compress/hist.h",
+        "zstd/lib/compress/huf_compress.c",
+        "zstd/lib/compress/zstd_compress.c",
+        "zstd/lib/compress/zstd_compress_internal.h",
+        "zstd/lib/compress/zstd_compress_literals.c",
+        "zstd/lib/compress/zstd_compress_literals.h",
+        "zstd/lib/compress/zstd_compress_sequences.c",
+        "zstd/lib/compress/zstd_compress_sequences.h",
+        "zstd/lib/compress/zstd_compress_superblock.c",
+        "zstd/lib/compress/zstd_compress_superblock.h",
+        "zstd/lib/compress/zstd_cwksp.h",
+        "zstd/lib/compress/zstd_double_fast.c",
+        "zstd/lib/compress/zstd_double_fast.h",
+        "zstd/lib/compress/zstd_fast.c",
+        "zstd/lib/compress/zstd_fast.h",
+        "zstd/lib/compress/zstd_lazy.c",
+        "zstd/lib/compress/zstd_lazy.h",
+        "zstd/lib/compress/zstd_ldm.c",
+        "zstd/lib/compress/zstd_ldm.h",
+        "zstd/lib/compress/zstd_ldm_geartab.h",
+        "zstd/lib/compress/zstd_opt.c",
+        "zstd/lib/compress/zstd_opt.h",
+        "zstd/lib/compress/zstd_preSplit.c",
+        "zstd/lib/compress/zstd_preSplit.h",
+        "zstd/lib/compress/zstdmt_compress.c",
+        "zstd/lib/compress/zstdmt_compress.h",
+        "zstd/lib/decompress/huf_decompress.c",
+        "zstd/lib/decompress/huf_decompress_amd64.S",
+        "zstd/lib/decompress/zstd_ddict.c",
+        "zstd/lib/decompress/zstd_ddict.h",
+        "zstd/lib/decompress/zstd_decompress.c",
+        "zstd/lib/decompress/zstd_decompress_block.c",
+        "zstd/lib/decompress/zstd_decompress_block.h",
+        "zstd/lib/decompress/zstd_decompress_internal.h",
+        "zstd/lib/deprecated/zbuff.h",
+        "zstd/lib/dictBuilder/cover.c",
+        "zstd/lib/dictBuilder/cover.h",
+        "zstd/lib/dictBuilder/divsufsort.c",
+        "zstd/lib/dictBuilder/divsufsort.h",
+        "zstd/lib/dictBuilder/fastcover.c",
+        "zstd/lib/dictBuilder/zdict.c",
+        "zstd/lib/legacy/zstd_legacy.h",
+        "zstd/lib/legacy/zstd_v01.c",
+        "zstd/lib/legacy/zstd_v01.h",
+        "zstd/lib/legacy/zstd_v02.c",
+        "zstd/lib/legacy/zstd_v02.h",
+        "zstd/lib/legacy/zstd_v03.c",
+        "zstd/lib/legacy/zstd_v03.h",
+        "zstd/lib/legacy/zstd_v04.c",
+        "zstd/lib/legacy/zstd_v04.h",
+        "zstd/lib/legacy/zstd_v05.c",
+        "zstd/lib/legacy/zstd_v05.h",
+        "zstd/lib/legacy/zstd_v06.c",
+        "zstd/lib/legacy/zstd_v06.h",
+        "zstd/lib/legacy/zstd_v07.c",
+        "zstd/lib/legacy/zstd_v07.h",
+        "zstd/lib/zdict.h",
+        "zstd/lib/zstd.h",
+        "zstd/lib/zstd_errors.h",
+    ],
+    urls = ["https://static.crates.io/crates/zstd-sys/2.0.16+zstd.1.5.7/download"],
+    visibility = [],
+)
+
+cargo.rust_library(
+    name = "zstd-sys-2.0.16+zstd.1.5.7",
+    srcs = [":zstd-sys-2.0.16+zstd.1.5.7.crate"],
+    crate = "zstd_sys",
+    crate_root = "zstd-sys-2.0.16+zstd.1.5.7.crate/src/lib.rs",
+    edition = "2018",
+    features = [
+        "legacy",
+        "std",
+        "zdict_builder",
+    ],
+    platform = {
+        "linux-arm64": dict(
+            deps = [":zstd-sys-2.0.16+zstd.1.5.7-zstd"],
+        ),
+        "linux-x86_64": dict(
+            deps = [":zstd-sys-2.0.16+zstd.1.5.7-zstd"],
+        ),
+        "macos-arm64": dict(
+            deps = [":zstd-sys-2.0.16+zstd.1.5.7-zstd"],
+        ),
+        "macos-x86_64": dict(
+            deps = [":zstd-sys-2.0.16+zstd.1.5.7-zstd"],
+        ),
+        "windows-gnu": dict(
+            deps = [":zstd-sys-2.0.16+zstd.1.5.7-zstd"],
+        ),
+        "windows-msvc": dict(
+            deps = [":zstd-sys-2.0.16+zstd.1.5.7-zstd-msvc"],
+        ),
+    },
+    visibility = [],
+)
+
+cxx_library(
+    name = "zstd-sys-2.0.16+zstd.1.5.7-zstd",
+    srcs = [
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/debug.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/entropy_common.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/error_private.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/fse_decompress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/pool.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/threading.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_common.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/fse_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/hist.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/huf_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_literals.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_sequences.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_superblock.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_double_fast.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_fast.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_lazy.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_ldm.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_opt.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_preSplit.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstdmt_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/huf_decompress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/huf_decompress_amd64.S]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_ddict.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress_block.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/cover.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/divsufsort.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/fastcover.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/zdict.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v01.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v02.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v03.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v04.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v05.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v06.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v07.c]",
+    ],
+    headers = [
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zdict.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/allocations.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/bits.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/bitstream.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/compiler.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/cpu.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/debug.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/error_private.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/fse.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/huf.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/mem.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/pool.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/portability_macros.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/threading.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/xxhash.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_deps.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_internal.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_trace.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/clevels.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/hist.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_internal.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_literals.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_sequences.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_superblock.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_cwksp.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_double_fast.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_fast.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_lazy.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_ldm.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_ldm_geartab.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_opt.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_preSplit.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstdmt_compress.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_ddict.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress_block.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress_internal.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/deprecated/zbuff.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/cover.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/divsufsort.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_legacy.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v01.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v02.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v03.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v04.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v05.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v06.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v07.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/zdict.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/zstd.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/zstd_errors.h]",
+    ],
+    compiler_flags = [
+        "-O3",
+        "-DZSTD_LIB_DEPRECATED=0",
+        "-fvisibility=hidden",
+        "-DXXH_PRIVATE_API=",
+        "-DZSTDLIB_VISIBILITY=",
+        "-DZDICTLIB_VISIBILITY=",
+        "-DZSTDERRORLIB_VISIBILITY=",
+        "-DZSTD_LEGACY_SUPPORT=1",
+    ],
+    visibility = [],
+)
+
+cxx_library(
+    name = "zstd-sys-2.0.16+zstd.1.5.7-zstd-msvc",
+    srcs = [
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/debug.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/entropy_common.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/error_private.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/fse_decompress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/pool.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/threading.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_common.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/fse_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/hist.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/huf_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_literals.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_sequences.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_superblock.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_double_fast.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_fast.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_lazy.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_ldm.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_opt.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_preSplit.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstdmt_compress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/huf_decompress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_ddict.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress_block.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/cover.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/divsufsort.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/fastcover.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/zdict.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v01.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v02.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v03.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v04.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v05.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v06.c]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v07.c]",
+    ],
+    headers = [
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zdict.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/allocations.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/bits.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/bitstream.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/compiler.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/cpu.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/debug.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/error_private.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/fse.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/huf.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/mem.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/pool.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/portability_macros.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/threading.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/xxhash.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_deps.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_internal.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/common/zstd_trace.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/clevels.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/hist.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_internal.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_literals.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_sequences.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_compress_superblock.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_cwksp.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_double_fast.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_fast.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_lazy.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_ldm.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_ldm_geartab.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_opt.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstd_preSplit.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/compress/zstdmt_compress.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_ddict.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress_block.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/decompress/zstd_decompress_internal.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/deprecated/zbuff.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/cover.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/dictBuilder/divsufsort.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_legacy.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v01.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v02.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v03.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v04.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v05.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v06.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/legacy/zstd_v07.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/zdict.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/zstd.h]",
+        ":zstd-sys-2.0.16+zstd.1.5.7.crate[zstd/lib/zstd_errors.h]",
+    ],
+    compiler_flags = [
+        "/O2",
+        "-DZSTD_LIB_DEPRECATED=0",
+        "-DXXH_PRIVATE_API=",
+        "-DZSTDLIB_VISIBILITY=",
+        "-DZDICTLIB_VISIBILITY=",
+        "-DZSTDERRORLIB_VISIBILITY=",
+        "-DZSTD_LEGACY_SUPPORT=1",
+    ],
     visibility = [],
 )
