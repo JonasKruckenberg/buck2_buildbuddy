@@ -1,10 +1,10 @@
 use crate::proto::buck::data::{
-    self, BuckEvent, ConsoleMessage, ConsoleWarning, buck_event, command_start, instant_event,
-    span_end_event, span_start_event,
+    self, buck_event, command_start, instant_event, span_end_event, span_start_event, BuckEvent,
+    ConsoleMessage, ConsoleWarning,
 };
 use crate::proto::build_event_stream::{
-    self, BuildEvent, BuildEventId, BuildFinished, BuildStarted, Progress, build_event,
-    build_event_id,
+    self, build_event, build_event_id, BuildEvent, BuildEventId, BuildFinished, BuildStarted,
+    Progress,
 };
 use crate::proto::google::protobuf as buck_pb;
 
@@ -127,7 +127,7 @@ impl BuckEventTranslator {
             last_message: false,
             payload: Some(build_event::Payload::Started(BuildStarted {
                 uuid: event.trace_id.clone(),
-                start_time: event.timestamp.as_ref().map(to_prost_timestamp),
+                start_time: event.timestamp,
                 start_time_millis: 0,
                 build_tool_version: String::new(),
                 options_description: String::new(),
@@ -160,7 +160,7 @@ impl BuckEventTranslator {
         // Compute finish_time from start_timestamp + duration, or fall back to event timestamp
         let finish_time = match (&self.start_timestamp, &span_end.duration) {
             (Some(start), Some(dur)) => Some(add_duration(start, dur)),
-            _ => event.timestamp.as_ref().map(to_prost_timestamp),
+            _ => event.timestamp,
         };
 
         vec![BuildEvent {
@@ -242,17 +242,8 @@ fn command_name(cmd: &data::CommandStart) -> String {
     .to_string()
 }
 
-/// Convert the crate-local generated Timestamp to prost_types::Timestamp.
-fn to_prost_timestamp(ts: &buck_pb::Timestamp) -> prost_types::Timestamp {
-    prost_types::Timestamp {
-        seconds: ts.seconds,
-        nanos: ts.nanos,
-    }
-}
-
-/// Add a Buck2-generated Duration to a Buck2-generated Timestamp,
-/// returning a prost_types::Timestamp (for BES compatibility).
-fn add_duration(ts: &buck_pb::Timestamp, dur: &buck_pb::Duration) -> prost_types::Timestamp {
+/// Add a Duration to a Timestamp.
+fn add_duration(ts: &buck_pb::Timestamp, dur: &buck_pb::Duration) -> buck_pb::Timestamp {
     let mut seconds = ts.seconds + dur.seconds;
     let mut nanos = ts.nanos + dur.nanos;
     if nanos >= 1_000_000_000 {
@@ -262,7 +253,7 @@ fn add_duration(ts: &buck_pb::Timestamp, dur: &buck_pb::Duration) -> prost_types
         seconds -= 1;
         nanos += 1_000_000_000;
     }
-    prost_types::Timestamp { seconds, nanos }
+    buck_pb::Timestamp { seconds, nanos }
 }
 
 #[cfg(test)]
@@ -313,7 +304,7 @@ mod tests {
             Some(build_event::Payload::Started(started)) => {
                 assert_eq!(started.uuid, "abc-123");
                 assert_eq!(started.command, "build");
-                assert_eq!(started.start_time, Some(to_prost_timestamp(&ts)));
+                assert_eq!(started.start_time, Some(ts));
             }
             other => panic!("Expected BuildStarted, got {:?}", other),
         }

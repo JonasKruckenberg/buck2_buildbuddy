@@ -6,6 +6,44 @@ load("@prelude//tests:test_toolchain.bzl", "noop_test_toolchain")
 load("@prelude//toolchains:remote_test_execution.bzl", "remote_test_execution_toolchain")
 load("@buck2tf//rust:toolchain.bzl", "rust_toolchain")
 
+# protoc binary for protobuf code generation
+http_archive(
+    name = "protoc-osx-aarch64",
+    sha256 = "3ef35187a3c8aed81ee57e792227e483e558fa56c93fce525e569bff55794c1a",
+    urls = ["https://github.com/protocolbuffers/protobuf/releases/download/v34.0/protoc-34.0-osx-aarch_64.zip"],
+    sub_targets = ["bin/protoc", "include"],
+    visibility = [],
+)
+
+http_archive(
+    name = "protoc-linux-x86_64",
+    sha256 = "e9a91b6fcfe4177ec2cd35fc8f15c1e811fa0ecdef9372755cd6d3513d5faaab",
+    urls = ["https://github.com/protocolbuffers/protobuf/releases/download/v34.0/protoc-34.0-linux-x86_64.zip"],
+    sub_targets = ["bin/protoc", "include"],
+    visibility = [],
+)
+
+genrule(
+    name = "protoc",
+    cmd = select({
+        "prelude//os:macos": "cp $(location :protoc-osx-aarch64[bin/protoc]) $OUT && chmod +x $OUT",
+        "prelude//os:linux": "cp $(location :protoc-linux-x86_64[bin/protoc]) $OUT && chmod +x $OUT",
+    }),
+    out = "protoc",
+    executable = True,
+    visibility = ["PUBLIC"],
+)
+
+genrule(
+    name = "protoc_include",
+    cmd = select({
+        "prelude//os:macos": "cp -r $(location :protoc-osx-aarch64[include]) $OUT",
+        "prelude//os:linux": "cp -r $(location :protoc-linux-x86_64[include]) $OUT",
+    }),
+    out = "include",
+    visibility = ["PUBLIC"],
+)
+
 system_cxx_toolchain(
     name = "cxx",
     linker = "gcc", # this doesnt correctly infer the linker somehow

@@ -1,11 +1,15 @@
-rust_binary(
+load("//:proto_defs.bzl", "rust_protobuf_library")
+
+rust_protobuf_library(
     name = "buck2bes",
     srcs = glob(["src/**/*.rs"]),
-    deps = [
-        "//buck2bes/third-party:prost",
-        "//buck2bes/third-party:prost-types",
-        "//buck2bes/third-party:serde",
-        "//buck2bes/third-party:serde_json"
+    build_script = "build.rs",
+    proto_srcs = "//proto:all",
+    build_script_deps = [
+        "//third-party:prost-build",
     ],
-    visibility = ["PUBLIC"]
+    deps = [
+        "//third-party:prost",
+        "//third-party:serde",
+    ],
 )

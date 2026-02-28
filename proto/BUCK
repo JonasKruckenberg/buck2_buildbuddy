@@ -1,0 +1,19 @@
+load("//:proto_defs.bzl", "proto_srcs")
+
+proto_srcs(
+    name = "buck2",
+    srcs = glob(["buck2/**/*.proto"]),
+    visibility = ["PUBLIC"],
+)
+
+proto_srcs(
+    name = "bes",
+    srcs = glob(["bes/**/*.proto"]),
+    visibility = ["PUBLIC"],
+)
+
+proto_srcs(
+    name = "all",
+    deps = [":buck2", ":bes"],
+    visibility = ["PUBLIC"],
+)
