@@ -1,4 +1,5 @@
-mod translate;
+pub mod client;
+pub mod translate;
 
 #[cfg(test)]
 mod tests {

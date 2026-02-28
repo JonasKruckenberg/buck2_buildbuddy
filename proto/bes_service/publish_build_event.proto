@@ -1,0 +1,65 @@
+// Copyright 2025 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.devtools.build.v1;
+
+import "build_events.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+
+// A service for publishing BuildEvents.
+service PublishBuildEvent {
+  // Publish a build event stating the new state of a build.
+  rpc PublishLifecycleEvent(PublishLifecycleEventRequest)
+      returns (google.protobuf.Empty);
+
+  // Publish build tool events belonging to the same stream to a backend job
+  // using bidirectional streaming.
+  rpc PublishBuildToolEventStream(stream PublishBuildToolEventStreamRequest)
+      returns (stream PublishBuildToolEventStreamResponse);
+}
+
+message PublishLifecycleEventRequest {
+  enum ServiceLevel {
+    NONINTERACTIVE = 0;
+    INTERACTIVE = 1;
+  }
+
+  ServiceLevel service_level = 1;
+  OrderedBuildEvent build_event = 2;
+  google.protobuf.Duration stream_timeout = 3;
+  repeated string notification_keywords = 4;
+  string project_id = 6;
+  bool check_preceding_lifecycle_events_present = 7;
+}
+
+message PublishBuildToolEventStreamResponse {
+  StreamId stream_id = 1;
+  int64 sequence_number = 2;
+}
+
+message OrderedBuildEvent {
+  StreamId stream_id = 1;
+  int64 sequence_number = 2;
+  BuildEvent event = 3;
+}
+
+message PublishBuildToolEventStreamRequest {
+  OrderedBuildEvent ordered_build_event = 4;
+  repeated string notification_keywords = 5;
+  string project_id = 6;
+  bool check_preceding_lifecycle_events_present = 7;
+}

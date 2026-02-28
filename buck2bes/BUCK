@@ -3,7 +3,10 @@ rust_library(
     srcs = glob(["src/**/*.rs"]),
     deps = [
         "//buck2bes_proto:buck2bes_proto",
-        # "//third-party:zstd",
+        "//third-party:prost",
+        "//third-party:tokio-stream",
+        "//third-party:tonic",
+        "//third-party:tonic-prost",
     ],
 )
 

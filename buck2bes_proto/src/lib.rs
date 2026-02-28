@@ -24,6 +24,14 @@ pub mod google {
     pub mod protobuf {
         include!(concat!(env!("OUT_DIR"), "/google.protobuf.rs"));
     }
+
+    pub mod devtools {
+        pub mod build {
+            pub mod v1 {
+                include!(concat!(env!("OUT_DIR"), "/google.devtools.build.v1.rs"));
+            }
+        }
+    }
 }
 
 pub mod build_event_stream {

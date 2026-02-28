@@ -13,7 +13,13 @@ proto_srcs(
 )
 
 proto_srcs(
+    name = "bes_service",
+    srcs = glob(["bes_service/**/*.proto"]),
+    visibility = ["PUBLIC"],
+)
+
+proto_srcs(
     name = "all",
-    deps = [":buck2", ":bes"],
+    deps = [":buck2", ":bes", ":bes_service"],
     visibility = ["PUBLIC"],
 )
