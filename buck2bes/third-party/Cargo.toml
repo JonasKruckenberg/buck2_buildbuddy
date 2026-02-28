@@ -3,6 +3,10 @@ name = "buck2bes"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "_main"
+path = "_main.rs"
+
 [dependencies]
 prost = "0.14"
 prost-types = "0.14"

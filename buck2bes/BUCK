@@ -1,0 +1,11 @@
+rust_binary(
+    name = "buck2bes",
+    srcs = glob(["src/**/*.rs"]),
+    deps = [
+        "//buck2bes/third-party:prost",
+        "//buck2bes/third-party:prost-types",
+        "//buck2bes/third-party:serde",
+        "//buck2bes/third-party:serde_json"
+    ],
+    visibility = ["PUBLIC"]
+)
