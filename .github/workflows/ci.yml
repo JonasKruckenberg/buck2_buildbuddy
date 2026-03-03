@@ -26,4 +26,6 @@ jobs:
           nix_path: nixpkgs=channel:nixpkgs-unstable
 
       - name: Run test
-        run: nix run nixpkgs#buck2 build //buck2bes:buck2bes --remote-only
+        run: ./.github/workflows/buck2 build //buck2bes:buck2bes --remote-only
+        env:
+          BUILDBUDDY_API_KEY: "{{secrets.BUILDBUDDY_API_KEY}}"

@@ -17,7 +17,7 @@ remote_execution_platform(
 execution_platforms(
     name = "platforms",
     platforms = [
-        ":remote",
+        # ":remote",
         ":default",
     ],
     visibility = ["PUBLIC"],
