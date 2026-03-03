@@ -8,18 +8,16 @@ load("@buck2tf//rust:toolchain.bzl", "rust_toolchain")
 
 system_cxx_toolchain(
     name = "cxx",
+    linker = "gcc", # this doesnt correctly infer the linker somehow
     visibility = ["PUBLIC"],
 )
 
-rust_toolchain.stable.latest.default(
+rust_toolchain.nightly.latest.default(
     name = "rust",
     default_edition = "2024",
     visibility = ["PUBLIC"],
-    rustc_target_triple = "aarch64-apple-darwin"
+    # rustc_target_triple = "aarch64-apple-darwin"
 )
-
-# system_rust_toolchain(
-# )
 
 system_python_bootstrap_toolchain(
     name = "python_bootstrap",

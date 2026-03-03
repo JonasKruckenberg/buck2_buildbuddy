@@ -21,7 +21,7 @@
 
 [external_cell_buck2tf]
   git_origin = https://github.com/JonasKruckenberg/buck2tf
-  commit_hash = 592f81a469c518287655c10c00e0e5aa258c8cac
+  commit_hash = 00f73f2b94a56caab11986c55675fde0c9c01a42
 
 [parser]
   target_platform_detector_spec = target:root//...->prelude//platforms:default \

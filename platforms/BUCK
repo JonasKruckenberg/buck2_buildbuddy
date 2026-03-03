@@ -1,5 +1,24 @@
-load(":defs.bzl", "platforms")
+load("@prelude//platforms:defs.bzl", "execution_platform", "host_configuration")
+load(":defs.bzl", "remote_execution_platform", "execution_platforms")
 
-oncall("build_infra")
+execution_platform(
+    name = "default",
+    cpu_configuration = host_configuration.cpu,
+    os_configuration = host_configuration.os,
+    use_windows_path_separators = host_info().os.is_windows,
+)
 
-platforms(name = "platforms")
+remote_execution_platform(
+    name = "remote",
+    cpu_configuration = "prelude//cpu/constraints:x86_64",
+    os_configuration = "prelude//os/constraints:linux",
+)
+
+execution_platforms(
+    name = "platforms",
+    platforms = [
+        ":remote",
+        ":default",
+    ],
+    visibility = ["PUBLIC"],
+)
