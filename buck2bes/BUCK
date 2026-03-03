@@ -5,8 +5,7 @@ rust_library(
         "//buck2bes_proto:buck2bes_proto",
         "//third-party:prost",
         "//third-party:tokio-stream",
-        "//third-party:tonic",
-        "//third-party:tonic-prost",
+        "//third-party:tonic"
     ],
 )
 
@@ -16,6 +15,11 @@ rust_test(
     deps = [
         "//buck2bes_proto:buck2bes_proto",
         "//third-party:prost",
-        "//third-party:zstd",
+        "//third-party:tokio",
+        "//third-party:tokio-stream",
+        "//third-party:tonic",
+        "//third-party:tonic-prost",
+        # "//third-party:zstd",
+        # "//third-party:aws-lc-sys"
     ],
 )

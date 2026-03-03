@@ -4,15 +4,14 @@ pub mod translate;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use buck2bes_proto::buck::daemon::command_progress::Progress;
     use buck2bes_proto::buck::daemon::CommandProgress;
+    use buck2bes_proto::buck::daemon::command_progress::Progress;
     use buck2bes_proto::buck::data::Invocation;
-    use prost::bytes::{Buf, Bytes};
     use prost::Message;
-    use std::io::Cursor;
+    use prost::bytes::Bytes;
 
-    #[test]
-    fn translate() {
+    #[tokio::test]
+    async fn translate() {
         let compressed = include_bytes!("./testlog.pb.zst");
         let decompressed = zstd::stream::decode_all(&compressed[..]).unwrap();
         let mut buf = Bytes::from_owner(decompressed);
@@ -30,6 +29,19 @@ mod tests {
             events.append(&mut bes_events);
         }
 
-        panic!("{header:?} {events:?}");
+        // let api_key = std::env::var("BUILDBUDDY_API_KEY").unwrap();
+        let mut client = crate::client::BesClient::connect(
+            "https://remote.buildbuddy.io",
+            "8MWg2RSiImiL2Bks9gCn",
+            "0",
+            "0",
+            "k23",
+        )
+        .await
+        .unwrap();
+
+        client.publish(events, true).await.unwrap();
+
+        // panic!("{header:?} {events:?}");
     }
 }

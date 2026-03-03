@@ -1,4 +1,5 @@
 third_party_dir = "third-party"
+manifest_path = "Cargo.toml"
 
 # Configuration for generated BUCK file
 [buck]

@@ -50,7 +50,7 @@ system_cxx_toolchain(
     visibility = ["PUBLIC"],
 )
 
-rust_toolchain.nightly.latest.default(
+rust_toolchain.stable.latest.default(
     name = "rust",
     default_edition = "2024",
     visibility = ["PUBLIC"],

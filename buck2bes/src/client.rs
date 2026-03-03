@@ -1,29 +1,49 @@
 use buck2bes_proto::build_event_stream;
 use buck2bes_proto::google::devtools::build::v1::{
-    build_event, build_status, publish_build_event_client::PublishBuildEventClient,
-    publish_lifecycle_event_request::ServiceLevel, stream_id::BuildComponent, BuildEvent,
-    BuildStatus, OrderedBuildEvent, PublishBuildToolEventStreamRequest,
-    PublishLifecycleEventRequest, StreamId,
+    BuildEvent, BuildStatus, OrderedBuildEvent, PublishBuildToolEventStreamRequest,
+    PublishLifecycleEventRequest, StreamId, build_event, build_status,
+    publish_build_event_client::PublishBuildEventClient,
+    publish_lifecycle_event_request::ServiceLevel, stream_id::BuildComponent,
 };
 use buck2bes_proto::google::protobuf::{Any, Timestamp};
 use prost::Message;
+use tonic::metadata::MetadataValue;
+use tonic::service::interceptor::InterceptedService;
+use tonic::transport::Channel;
 
-pub struct BesClient {
-    client: PublishBuildEventClient<tonic::transport::Channel>,
-    build_id: String,
-    invocation_id: String,
-    project_id: String,
+type Interceptor =
+    Box<dyn FnMut(tonic::Request<()>) -> Result<tonic::Request<()>, tonic::Status> + Send>;
+
+pub struct BesClient<'a> {
+    client: PublishBuildEventClient<InterceptedService<Channel, Interceptor>>,
+    build_id: &'a str,
+    invocation_id: &'a str,
+    project_id: &'a str,
 }
 
-impl BesClient {
+impl<'a> BesClient<'a> {
     pub async fn connect(
-        endpoint: &str,
-        build_id: String,
-        invocation_id: String,
-        project_id: String,
+        endpoint: &'static str,
+        api_key: &str,
+        build_id: &'a str,
+        invocation_id: &'a str,
+        project_id: &'a str,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let client = PublishBuildEventClient::connect(endpoint.to_owned()).await?;
-        Ok(Self {
+        let channel = Channel::from_static(endpoint)
+            .http2_keep_alive_interval(std::time::Duration::from_secs(10))
+            .connect()
+            .await?;
+
+        let api_key: MetadataValue<_> = api_key.parse()?;
+
+        let interceptor: Interceptor = Box::new(move |mut req: tonic::Request<()>| {
+            req.metadata_mut()
+                .insert("x-buildbuddy-api-key", api_key.clone());
+            Ok(req)
+        });
+        let client = PublishBuildEventClient::with_interceptor(channel, interceptor);
+
+        Ok(BesClient {
             client,
             build_id,
             invocation_id,
@@ -60,12 +80,10 @@ impl BesClient {
         self.publish_lifecycle_event(
             1,
             BuildComponent::Controller,
-            build_event::Event::InvocationAttemptStarted(
-                build_event::InvocationAttemptStarted {
-                    attempt_number: 1,
-                    details: None,
-                },
-            ),
+            build_event::Event::InvocationAttemptStarted(build_event::InvocationAttemptStarted {
+                attempt_number: 1,
+                details: None,
+            }),
             &now,
         )
         .await?;
@@ -82,18 +100,16 @@ impl BesClient {
         self.publish_lifecycle_event(
             2,
             BuildComponent::Controller,
-            build_event::Event::InvocationAttemptFinished(
-                build_event::InvocationAttemptFinished {
-                    invocation_status: Some(BuildStatus {
-                        result: result as i32,
-                        final_invocation_id: self.invocation_id.clone(),
-                        build_tool_exit_code: None,
-                        error_message: String::new(),
-                        details: None,
-                    }),
+            build_event::Event::InvocationAttemptFinished(build_event::InvocationAttemptFinished {
+                invocation_status: Some(BuildStatus {
+                    result: result as i32,
+                    final_invocation_id: self.invocation_id.to_string(),
+                    build_tool_exit_code: None,
+                    error_message: String::new(),
                     details: None,
-                },
-            ),
+                }),
+                details: None,
+            }),
             &now,
         )
         .await?;
@@ -105,7 +121,7 @@ impl BesClient {
             build_event::Event::BuildFinished(build_event::BuildFinished {
                 status: Some(BuildStatus {
                     result: result as i32,
-                    final_invocation_id: self.invocation_id.clone(),
+                    final_invocation_id: self.invocation_id.to_string(),
                     build_tool_exit_code: None,
                     error_message: String::new(),
                     details: None,
@@ -130,8 +146,8 @@ impl BesClient {
             service_level: ServiceLevel::Interactive as i32,
             build_event: Some(OrderedBuildEvent {
                 stream_id: Some(StreamId {
-                    build_id: self.build_id.clone(),
-                    invocation_id: self.invocation_id.clone(),
+                    build_id: self.build_id.to_string(),
+                    invocation_id: self.invocation_id.to_string(),
                     component: component as i32,
                 }),
                 sequence_number,
@@ -142,7 +158,7 @@ impl BesClient {
             }),
             stream_timeout: None,
             notification_keywords: vec![],
-            project_id: self.project_id.clone(),
+            project_id: self.project_id.to_string(),
             check_preceding_lifecycle_events_present: false,
         };
 
@@ -155,8 +171,8 @@ impl BesClient {
         events: Vec<build_event_stream::BuildEvent>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let stream_id = StreamId {
-            build_id: self.build_id.clone(),
-            invocation_id: self.invocation_id.clone(),
+            build_id: self.build_id.to_string(),
+            invocation_id: self.invocation_id.to_string(),
             component: BuildComponent::Tool as i32,
         };
 
@@ -180,7 +196,7 @@ impl BesClient {
                     }),
                 }),
                 notification_keywords: vec![],
-                project_id: self.project_id.clone(),
+                project_id: self.project_id.to_string(),
                 check_preceding_lifecycle_events_present: false,
             });
         }
@@ -195,13 +211,15 @@ impl BesClient {
                     event_time: Some(now),
                     event: Some(build_event::Event::ComponentStreamFinished(
                         build_event::BuildComponentStreamFinished {
-                            r#type: build_event::build_component_stream_finished::FinishType::Finished as i32,
+                            r#type:
+                                build_event::build_component_stream_finished::FinishType::Finished
+                                    as i32,
                         },
                     )),
                 }),
             }),
             notification_keywords: vec![],
-            project_id: self.project_id.clone(),
+            project_id: self.project_id.to_string(),
             check_preceding_lifecycle_events_present: false,
         });
 
